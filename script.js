@@ -12,10 +12,10 @@ window.onload = function () {
 function setGame() {
   // Add initial game board with empty tiles
   gameBoard = [
-    [2, 2, 2, 2],
-    [2, 2, 2, 2],
-    [4, 4, 8, 8],
-    [4, 4, 8, 8],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
   ];
 
   // Add and style tiles with IDs from game board
@@ -30,6 +30,10 @@ function setGame() {
       gameBoardDiv.append(tile);
     }
   }
+
+  // Generate two starting random tiles
+  generateRandomTile();
+  generateRandomTile();
 }
 
 // Update tile content and style based on number
@@ -52,15 +56,23 @@ document.addEventListener("keydown", (e) => {
   if (e.code == "ArrowLeft" && !isKeyDown) {
     isKeyDown = true;
     slideLeft();
+
+    generateRandomTile();
   } else if (e.code == "ArrowRight" && !isKeyDown) {
     isKeyDown = true;
     slideRight();
+
+    generateRandomTile();
   } else if (e.code == "ArrowUp" && !isKeyDown) {
     isKeyDown = true;
     slideUp();
+
+    generateRandomTile();
   } else if (e.code == "ArrowDown" && !isKeyDown) {
     isKeyDown = true;
     slideDown();
+
+    generateRandomTile();
   }
 });
 
@@ -169,4 +181,43 @@ function slideDown() {
       updateTile(tile, num);
     }
   }
+}
+
+// Randomly place 2 (90%) or 4 (10%) on an empty tile, if available
+function generateRandomTile() {
+  let foundEmptyTile = hasEmptyTile();
+
+  while (foundEmptyTile) {
+    let r = Math.floor(Math.random() * 4);
+    let c = Math.floor(Math.random() * 4);
+
+    if (gameBoard[r][c] == 0) {
+      // Generate random number between 1 and 10
+      let randomNumber = Math.floor(Math.random() * 10) + 1;
+
+      // Decide if tile is 2 (90%) or 4 (10%) based on random number
+      if (randomNumber <= 9) {
+        gameBoard[r][c] = 2;
+        let tile = document.getElementById(r.toString() + "-" + c.toString());
+        tile.innerHTML = "2";
+        tile.classList.add("t2");
+      } else {
+        gameBoard[r][c] = 4;
+        let tile = document.getElementById(r.toString() + "-" + c.toString());
+        tile.innerHTML = "4";
+        tile.classList.add("t4");
+      }
+
+      foundEmptyTile = false;
+    }
+  }
+}
+
+// Check for any empty tile on the board
+function hasEmptyTile() {
+  for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 4; c++) if (gameBoard[r][c] == 0) return true;
+  }
+
+  return false;
 }
