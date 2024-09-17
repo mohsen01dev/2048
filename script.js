@@ -1,7 +1,11 @@
 // Define variables and DOM elements
 const gameBoardDiv = document.getElementById("game-board");
+const popUp = document.getElementsByClassName("pop-up")[0];
+
 let gameBoard;
 let isKeyDown = false;
+let isGameWon = false;
+let isPopupVisible = false;
 
 // Set up game when window loads
 window.onload = function () {
@@ -53,24 +57,34 @@ function updateTile(tile, num) {
 
 // Process key press actions (once per key press)
 document.addEventListener("keydown", (e) => {
-  if (e.code == "ArrowLeft" && !isKeyDown) {
+  if (isPopupVisible) {
+    return;
+  } else if (e.code == "ArrowLeft" && !isKeyDown) {
     isKeyDown = true;
     slideLeft();
+
+    checkWin();
 
     generateRandomTile();
   } else if (e.code == "ArrowRight" && !isKeyDown) {
     isKeyDown = true;
     slideRight();
 
+    checkWin();
+
     generateRandomTile();
   } else if (e.code == "ArrowUp" && !isKeyDown) {
     isKeyDown = true;
     slideUp();
 
+    checkWin();
+
     generateRandomTile();
   } else if (e.code == "ArrowDown" && !isKeyDown) {
     isKeyDown = true;
     slideDown();
+
+    checkWin();
 
     generateRandomTile();
   }
@@ -220,4 +234,39 @@ function hasEmptyTile() {
   }
 
   return false;
+}
+
+// Check win condition (2048 tile) and show win pop-up
+function checkWin() {
+  if (!isGameWon) {
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        if (gameBoard[r][c] == 2048) {
+          isGameWon = true;
+          isPopupVisible = true;
+
+          popUp.innerHTML = `
+          <div class="pop-up-content">
+            <h1>You Won!</h1>
+            <p>Congratulations! You've reached the 2048 tile.</p>
+  
+            <div class="pop-up-btn">
+              <button type="button" id="win-confirmation-btn">Thanks!</button>
+            </div>
+          </div>
+          `;
+
+          popUp.classList.remove("deactive");
+
+          const winConfirmationButton = document.getElementById(
+            "win-confirmation-btn"
+          );
+          winConfirmationButton.addEventListener("click", () => {
+            popUp.classList.add("deactive");
+            isPopupVisible = false;
+          });
+        }
+      }
+    }
+  }
 }
