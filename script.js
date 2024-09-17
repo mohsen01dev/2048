@@ -52,6 +52,15 @@ document.addEventListener("keydown", (e) => {
   if (e.code == "ArrowLeft" && !isKeyDown) {
     isKeyDown = true;
     slideLeft();
+  } else if (e.code == "ArrowRight" && !isKeyDown) {
+    isKeyDown = true;
+    slideRight();
+  } else if (e.code == "ArrowUp" && !isKeyDown) {
+    isKeyDown = true;
+    slideUp();
+  } else if (e.code == "ArrowDown" && !isKeyDown) {
+    isKeyDown = true;
+    slideDown();
   }
 });
 
@@ -96,4 +105,68 @@ function slide(row) {
 // Create a new array without zeros
 function removeZero(row) {
   return row.filter((num) => num != 0);
+}
+
+// Execute corresponding code if the pressed key is "right"
+function slideRight() {
+  for (let r = 0; r < 4; r++) {
+    let row = gameBoard[r];
+    row.reverse(); // Reverse row to simulate sliding right
+    row = slide(row);
+    row.reverse(); // Restore original order
+    gameBoard[r] = row;
+
+    // Update DOM tiles
+    for (let c = 0; c < 4; c++) {
+      let tile = document.getElementById(r.toString() + "-" + c.toString());
+      let num = gameBoard[r][c];
+      updateTile(tile, num);
+    }
+  }
+}
+
+// Execute corresponding code if the pressed key is "up"
+function slideUp() {
+  // Convert column to row to use row sliding logic for column
+  for (let c = 0; c < 4; c++) {
+    let row = [
+      gameBoard[0][c],
+      gameBoard[1][c],
+      gameBoard[2][c],
+      gameBoard[3][c],
+    ];
+    row = slide(row);
+
+    // Update game board and DOM tiles
+    for (let r = 0; r < 4; r++) {
+      gameBoard[r][c] = row[r]; // Convert row array back to column
+      let tile = document.getElementById(r.toString() + "-" + c.toString());
+      let num = gameBoard[r][c];
+      updateTile(tile, num);
+    }
+  }
+}
+
+// Execute corresponding code if the pressed key is "down"
+function slideDown() {
+  // Convert column to row to use row sliding logic for column
+  for (let c = 0; c < 4; c++) {
+    let row = [
+      gameBoard[0][c],
+      gameBoard[1][c],
+      gameBoard[2][c],
+      gameBoard[3][c],
+    ];
+    row.reverse(); // Reverse row to simulate sliding down
+    row = slide(row);
+    row.reverse(); // Restore original order
+
+    // Update game board and DOM tiles
+    for (let r = 0; r < 4; r++) {
+      gameBoard[r][c] = row[r]; // Convert row array back to column
+      let tile = document.getElementById(r.toString() + "-" + c.toString());
+      let num = gameBoard[r][c];
+      updateTile(tile, num);
+    }
+  }
 }
