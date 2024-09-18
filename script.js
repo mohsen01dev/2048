@@ -98,12 +98,16 @@ function slideLeft() {
     row = slide(row);
     gameBoard[r] = row;
 
-    // Update DOM tiles
-    for (let c = 0; c < 4; c++) {
-      let tile = document.getElementById(r.toString() + "-" + c.toString());
-      let num = gameBoard[r][c];
-      updateTile(tile, num);
-    }
+    updateDOMHorizontalSlide(r);
+  }
+}
+
+// Update DOM for horizontal slide
+function updateDOMHorizontalSlide(r) {
+  for (let c = 0; c < 4; c++) {
+    let tile = document.getElementById(r.toString() + "-" + c.toString());
+    let num = gameBoard[r][c];
+    updateTile(tile, num);
   }
 }
 
@@ -138,12 +142,7 @@ function slideRight() {
     row.reverse(); // Restore original order
     gameBoard[r] = row;
 
-    // Update DOM tiles
-    for (let c = 0; c < 4; c++) {
-      let tile = document.getElementById(r.toString() + "-" + c.toString());
-      let num = gameBoard[r][c];
-      updateTile(tile, num);
-    }
+    updateDOMHorizontalSlide(r);
   }
 }
 
@@ -159,13 +158,17 @@ function slideUp() {
     ];
     row = slide(row);
 
-    // Update game board and DOM tiles
-    for (let r = 0; r < 4; r++) {
-      gameBoard[r][c] = row[r]; // Convert row array back to column
-      let tile = document.getElementById(r.toString() + "-" + c.toString());
-      let num = gameBoard[r][c];
-      updateTile(tile, num);
-    }
+    updateDOMVerticalSlide(c, row);
+  }
+}
+
+// Update game board and DOM for vertical slide
+function updateDOMVerticalSlide(c, row) {
+  for (let r = 0; r < 4; r++) {
+    gameBoard[r][c] = row[r]; // Convert row array back to column
+    let tile = document.getElementById(r.toString() + "-" + c.toString());
+    let num = gameBoard[r][c];
+    updateTile(tile, num);
   }
 }
 
@@ -183,13 +186,7 @@ function slideDown() {
     row = slide(row);
     row.reverse(); // Restore original order
 
-    // Update game board and DOM tiles
-    for (let r = 0; r < 4; r++) {
-      gameBoard[r][c] = row[r]; // Convert row array back to column
-      let tile = document.getElementById(r.toString() + "-" + c.toString());
-      let num = gameBoard[r][c];
-      updateTile(tile, num);
-    }
+    updateDOMVerticalSlide(c, row);
   }
 }
 
@@ -406,14 +403,7 @@ function playAgain() {
     [0, 0, 0, 0],
   ];
 
-  // Update DOM tiles
-  for (let r = 0; r < 4; r++) {
-    for (let c = 0; c < 4; c++) {
-      let tile = document.getElementById(r.toString() + "-" + c.toString());
-      let num = gameBoard[r][c];
-      updateTile(tile, num);
-    }
-  }
+  updateDOM();
 
   generateRandomTile();
   generateRandomTile();
@@ -434,16 +424,21 @@ function saveGame() {
 // Load game state from local storage
 function loadGame() {
   const savedBoard = localStorage.getItem("gameBoard");
+
   if (savedBoard) {
     gameBoard = JSON.parse(savedBoard);
 
-    // Update DOM tiles
-    for (let r = 0; r < 4; r++) {
-      for (let c = 0; c < 4; c++) {
-        let tile = document.getElementById(r.toString() + "-" + c.toString());
-        let num = gameBoard[r][c];
-        updateTile(tile, num);
-      }
+    updateDOM();
+  }
+}
+
+// Update DOM
+function updateDOM() {
+  for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 4; c++) {
+      let tile = document.getElementById(r.toString() + "-" + c.toString());
+      let num = gameBoard[r][c];
+      updateTile(tile, num);
     }
   }
 }
