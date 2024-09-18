@@ -4,7 +4,7 @@
 }
 
 @font-face {
-  font-family: "FiraCode-bold";
+  font-family: "FiraCode-Bold";
   src: url(fonts/FiraCode-Bold.woff2);
 }
 
@@ -16,7 +16,7 @@
   color: #151515;
   outline: none;
 
-  font-family: "FiraCode-Regular";
+  font-family: "FiraCode-Regular", monospace;
   font-size: 1rem;
 }
 
@@ -31,7 +31,7 @@ body {
 }
 
 h1 {
-  font-family: "FiraCode-bold";
+  font-family: "FiraCode-Bold", monospace;
   font-size: 2rem;
 }
 

@@ -3,6 +3,7 @@ const gameBoardContainer = document.getElementById("game-board-container");
 const popUpContainer = document.getElementsByClassName("pop-up-container")[0];
 const newGameButton = document.getElementById("new-game-btn");
 const scoreDisplay = document.getElementById("score");
+const timerDisplay = document.getElementById("timer");
 
 let gameBoard = [
   [0, 0, 0, 0],
@@ -14,6 +15,9 @@ let currentKey = null;
 let isGameWon = false;
 let isPopUpVisible = false;
 let currentScore = 0;
+let timerInterval;
+let initialTime;
+let isFirstMove = true;
 
 // Set up game when window loads
 window.onload = function () {
@@ -71,6 +75,13 @@ document.addEventListener("keydown", (e) => {
   if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.code)) {
     currentKey = e.code;
 
+    // Start timer on first move
+    if (isFirstMove) {
+      startTimer();
+      isFirstMove = false;
+    }
+
+    // Handle arrow key presses for corresponding slide
     if (e.code == "ArrowLeft") {
       slideLeft();
     } else if (e.code == "ArrowRight") {
@@ -103,12 +114,12 @@ function slideLeft() {
     row = slide(row);
     gameBoard[r] = row;
 
-    updateDOMHorizontalSlide(r);
+    updateDOMGameBoardHorizontalSlide(r);
   }
 }
 
 // Update DOM for horizontal slide
-function updateDOMHorizontalSlide(r) {
+function updateDOMGameBoardHorizontalSlide(r) {
   for (let c = 0; c < 4; c++) {
     let tile = document.getElementById(r.toString() + "-" + c.toString());
     let num = gameBoard[r][c];
@@ -149,7 +160,7 @@ function slideRight() {
     row.reverse(); // Restore original order
     gameBoard[r] = row;
 
-    updateDOMHorizontalSlide(r);
+    updateDOMGameBoardHorizontalSlide(r);
   }
 }
 
@@ -165,12 +176,12 @@ function slideUp() {
     ];
     row = slide(row);
 
-    updateDOMVerticalSlide(c, row);
+    updateDOMGameBoardVerticalSlide(c, row);
   }
 }
 
 // Update game board and DOM for vertical slide
-function updateDOMVerticalSlide(c, row) {
+function updateDOMGameBoardVerticalSlide(c, row) {
   for (let r = 0; r < 4; r++) {
     gameBoard[r][c] = row[r]; // Convert row array back to column
     let tile = document.getElementById(r.toString() + "-" + c.toString());
@@ -193,7 +204,7 @@ function slideDown() {
     row = slide(row);
     row.reverse(); // Restore original order
 
-    updateDOMVerticalSlide(c, row);
+    updateDOMGameBoardVerticalSlide(c, row);
   }
 }
 
@@ -429,10 +440,14 @@ function newGame() {
     [0, 0, 0, 0],
   ];
 
-  updateDOM();
+  updateDOMGameBoard();
 
   currentScore = 0;
   scoreDisplay.innerHTML = "Score: 0";
+
+  stopTimer();
+  timerDisplay.innerHTML = `Time: 00:00:00`;
+  isFirstMove = true;
 
   isGameWon = false;
 
@@ -457,12 +472,12 @@ function loadGame() {
   if (savedBoard) {
     gameBoard = JSON.parse(savedBoard);
 
-    updateDOM();
+    updateDOMGameBoard();
   }
 }
 
 // Update DOM
-function updateDOM() {
+function updateDOMGameBoard() {
   for (let r = 0; r < 4; r++) {
     for (let c = 0; c < 4; c++) {
       let tile = document.getElementById(r.toString() + "-" + c.toString());
@@ -476,3 +491,33 @@ function updateDOM() {
 newGameButton.addEventListener("click", () => {
   newGame();
 });
+
+// Start and update DOM timer every second
+function startTimer() {
+  initialTime = Date.now();
+  timerInterval = setInterval(updateDOMTimer, 1000);
+}
+
+// Calculate and display timer on DOM
+function updateDOMTimer() {
+  // Time elapsed in seconds
+  const elapsedTime = Math.floor((Date.now() - initialTime) / 1000);
+
+  // Calculate hours, minutes, and seconds
+  let hours = Math.floor(elapsedTime / 3600);
+  let minutes = Math.floor((elapsedTime % 3600) / 60);
+  let seconds = elapsedTime % 60;
+
+  // Format hours, minutes, and seconds with leading zeros
+  hours = hours.toString().padStart(2, "0");
+  minutes = minutes.toString().padStart(2, "0");
+  seconds = seconds.toString().padStart(2, "0");
+
+  timerDisplay.innerHTML = `Time: ${hours}:${minutes}:${seconds}`;
+}
+
+// Stop timer and clear interval
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+}
