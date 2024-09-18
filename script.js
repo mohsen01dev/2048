@@ -1,6 +1,7 @@
 // Define variables and DOM elements
 const gameBoardDiv = document.getElementById("game-board");
 const popUp = document.getElementsByClassName("pop-up")[0];
+const newGameButton = document.getElementById("new-game-btn");
 
 let gameBoard = [
   [0, 0, 0, 0],
@@ -244,28 +245,30 @@ function checkWin() {
             <p>Congratulations! You've reached the 2048 tile.</p>
   
             <div class="pop-up-btn">
-              <button type="button" id="play-again-btn">Play Again!</button>
-              <button type="button" id="continue-playing-btn">Continue Playing!</button>
+              <button type="button" id="pop-up-new-game-btn">New Game</button>
+              <button type="button" id="pop-up-continue-playing-btn">Continue Playing</button>
             </div>
           </div>
           `;
 
           popUp.classList.remove("deactive");
 
-          // Handle "Play Again!" button click to restart the game
-          const playAgainButton = document.getElementById("play-again-btn");
-          playAgainButton.addEventListener("click", () => {
-            playAgain();
+          // Handle "New Game" button click to restart the game
+          const popUpNewGameButton = document.getElementById(
+            "pop-up-new-game-btn"
+          );
+          popUpNewGameButton.addEventListener("click", () => {
+            newGame();
 
             popUp.classList.add("deactive");
             isPopUpVisible = false;
           });
 
-          // Process "Continue Playing!" button click to resume game
-          const continuePlayingButton = document.getElementById(
-            "continue-playing-btn"
+          // Process "Continue Playing" button click to resume game
+          const popUpContinuePlayingButton = document.getElementById(
+            "pop-up-continue-playing-btn"
           );
-          continuePlayingButton.addEventListener("click", () => {
+          popUpContinuePlayingButton.addEventListener("click", () => {
             popUp.classList.add("deactive");
             isPopUpVisible = false;
           });
@@ -301,17 +304,17 @@ function checkLose() {
         <p>Sorry! You've run out of moves.</p>
     
         <div class="pop-up-btn">
-          <button type="button" id="play-again-btn">Play Again!</button>
+          <button type="button" id="pop-up-new-game-btn">New Game</button>
         </div>
       </div>
     `;
 
     popUp.classList.remove("deactive");
 
-    // Handle "Play Again!" button click to restart the game
-    const playAgainButton = document.getElementById("play-again-btn");
-    playAgainButton.addEventListener("click", () => {
-      playAgain();
+    // Handle "New Game" button click to restart the game
+    const popUpNewGameButton = document.getElementById("pop-up-new-game-btn");
+    popUpNewGameButton.addEventListener("click", () => {
+      newGame();
 
       popUp.classList.add("deactive");
       isPopUpVisible = false;
@@ -395,7 +398,7 @@ function simulateSlideDown(copyGameBoard) {
   return JSON.stringify(copyGameBoard) !== initialBoardState;
 }
 
-function playAgain() {
+function newGame() {
   gameBoard = [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
@@ -442,3 +445,8 @@ function updateDOM() {
     }
   }
 }
+
+// Handle "New Game" button click to restart the game
+newGameButton.addEventListener("click", () => {
+  newGame();
+});

@@ -161,16 +161,34 @@ h1 {
   padding: 10px;
 
   background-color: #eee;
-  border: 1px solid #bbada0;
+  border: 1px solid #cdc1b5;
 
   cursor: pointer;
 }
 
-.pop-up button:hover {
+.pop-up button:hover,
+#new-game-btn:hover {
+  background-color: #cdc1b5;
+  color: #f5f5f5;
+}
+
+.pop-up button:active,
+#new-game-btn:active {
   background-color: #bbada0;
+  border: 1px solid #bbada0;
   color: #f5f5f5;
 }
 
 .deactive {
   display: none;
+}
+
+#new-game-btn {
+  margin-top: 10px;
+  padding: 10px;
+
+  background-color: #eee;
+  border: 1px solid #cdc1b5;
+
+  cursor: pointer;
 }
