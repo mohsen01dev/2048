@@ -2,7 +2,12 @@
 const gameBoardDiv = document.getElementById("game-board");
 const popUp = document.getElementsByClassName("pop-up")[0];
 
-let gameBoard;
+let gameBoard = [
+  [0, 0, 0, 0],
+  [0, 0, 0, 0],
+  [0, 0, 0, 0],
+  [0, 0, 0, 0],
+];
 let currentKey = null;
 let isGameWon = false;
 let isPopUpVisible = false;
@@ -10,19 +15,21 @@ let isPopUpVisible = false;
 // Set up game when window loads
 window.onload = function () {
   setGame();
+  loadGame();
+
+  // Check if game board is empty and generate two initial random tiles if so
+  const isGameBoardEmpty = gameBoard.every((row) =>
+    row.every((tile) => tile == 0)
+  );
+  if (isGameBoardEmpty) {
+    generateRandomTile();
+    generateRandomTile();
+  }
 };
 
 // Set up initial game state
 function setGame() {
-  // Add initial game board with empty tiles
-  gameBoard = [
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-  ];
-
-  // Add and style tiles with IDs from game board
+  // Add and style tiles with IDs to game board
   for (let r = 0; r < 4; r++) {
     for (let c = 0; c < 4; c++) {
       let tile = document.createElement("div");
@@ -34,10 +41,6 @@ function setGame() {
       gameBoardDiv.append(tile);
     }
   }
-
-  // Generate two starting random tiles
-  generateRandomTile();
-  generateRandomTile();
 }
 
 // Update tile content and style based on number
@@ -278,13 +281,13 @@ function checkWin() {
 // Check lose condition (no empty tiles and valid moves) and show lose pop-up
 function checkLose() {
   // Deep copy game board to preserve original
-  const copyBoard = JSON.parse(JSON.stringify(gameBoard));
+  const copyGameBoard = JSON.parse(JSON.stringify(gameBoard));
 
   let foundEmptyTile = hasEmptyTile();
-  let canSlideLeft = simulateSlideLeft(copyBoard);
-  let canSlideRight = simulateSlideRight(copyBoard);
-  let canSlideUp = simulateSlideUp(copyBoard);
-  let canSlideDown = simulateSlideDown(copyBoard);
+  let canSlideLeft = simulateSlideLeft(copyGameBoard);
+  let canSlideRight = simulateSlideRight(copyGameBoard);
+  let canSlideUp = simulateSlideUp(copyGameBoard);
+  let canSlideDown = simulateSlideDown(copyGameBoard);
 
   if (
     !foundEmptyTile &&
@@ -320,67 +323,67 @@ function checkLose() {
 }
 
 // Simulate left slide operation without updating DOM
-function simulateSlideLeft(copyBoard) {
-  const initialBoardState = JSON.stringify(copyBoard);
+function simulateSlideLeft(copyGameBoard) {
+  const initialBoardState = JSON.stringify(copyGameBoard);
 
   for (let r = 0; r < 4; r++) {
-    let row = copyBoard[r];
+    let row = copyGameBoard[r];
     row = slide(row);
-    copyBoard[r] = row;
+    copyGameBoard[r] = row;
   }
 
-  return JSON.stringify(copyBoard) !== initialBoardState;
+  return JSON.stringify(copyGameBoard) !== initialBoardState;
 }
 
 // Simulate right slide operation without updating DOM
-function simulateSlideRight(copyBoard) {
-  const initialBoardState = JSON.stringify(copyBoard);
+function simulateSlideRight(copyGameBoard) {
+  const initialBoardState = JSON.stringify(copyGameBoard);
 
   for (let r = 0; r < 4; r++) {
-    let row = copyBoard[r];
+    let row = copyGameBoard[r];
     row.reverse(); // Reverse row to simulate sliding right
     row = slide(row);
     row.reverse(); // Restore original order
-    copyBoard[r] = row;
+    copyGameBoard[r] = row;
   }
 
-  return JSON.stringify(copyBoard) !== initialBoardState;
+  return JSON.stringify(copyGameBoard) !== initialBoardState;
 }
 
 // Simulate up slide operation without updating DOM
-function simulateSlideUp(copyBoard) {
-  const initialBoardState = JSON.stringify(copyBoard);
+function simulateSlideUp(copyGameBoard) {
+  const initialBoardState = JSON.stringify(copyGameBoard);
 
   // Convert column to row to use row sliding logic for column
   for (let c = 0; c < 4; c++) {
     let row = [
-      copyBoard[0][c],
-      copyBoard[1][c],
-      copyBoard[2][c],
-      copyBoard[3][c],
+      copyGameBoard[0][c],
+      copyGameBoard[1][c],
+      copyGameBoard[2][c],
+      copyGameBoard[3][c],
     ];
     row = slide(row);
 
     // Update copy board
     for (let r = 0; r < 4; r++) {
-      copyBoard[r][c] = row[r]; // Convert row array back to column
+      copyGameBoard[r][c] = row[r]; // Convert row array back to column
     }
   }
 
-  return JSON.stringify(copyBoard) !== initialBoardState;
+  return JSON.stringify(copyGameBoard) !== initialBoardState;
 }
 
 // Simulate down slide operation without updating DOM
-function simulateSlideDown(copyBoard) {
-  const initialBoardState = JSON.stringify(copyBoard);
+function simulateSlideDown(copyGameBoard) {
+  const initialBoardState = JSON.stringify(copyGameBoard);
 
   // Convert column to row to use row sliding logic for column
   for (let c = 0; c < 4; c++) {
     let row = [
-      copyBoard[0][c],
-      copyBoard[1][c],
-      copyBoard[2][c],
-      copyBoard[3][c],
+      copyGameBoard[0][c],
+      copyGameBoard[1][c],
+      copyGameBoard[2][c],
+      copyGameBoard[3][c],
     ];
     row.reverse(); // Reverse row to simulate sliding down
     row = slide(row);
@@ -388,11 +391,11 @@ function simulateSlideDown(copyBoard) {
 
     // Update copy board
     for (let r = 0; r < 4; r++) {
-      copyBoard[r][c] = row[r]; // Convert row array back to column
+      copyGameBoard[r][c] = row[r]; // Convert row array back to column
     }
   }
 
-  return JSON.stringify(copyBoard) !== initialBoardState;
+  return JSON.stringify(copyGameBoard) !== initialBoardState;
 }
 
 function playAgain() {
@@ -416,4 +419,31 @@ function playAgain() {
   generateRandomTile();
 
   isGameWon = false;
+}
+
+// Run saveGame() before unloading page
+window.addEventListener("beforeunload", (event) => {
+  saveGame();
+});
+
+// Save game state to local storage
+function saveGame() {
+  localStorage.setItem("gameBoard", JSON.stringify(gameBoard));
+}
+
+// Load game state from local storage
+function loadGame() {
+  const savedBoard = localStorage.getItem("gameBoard");
+  if (savedBoard) {
+    gameBoard = JSON.parse(savedBoard);
+
+    // Update DOM tiles
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        let tile = document.getElementById(r.toString() + "-" + c.toString());
+        let num = gameBoard[r][c];
+        updateTile(tile, num);
+      }
+    }
+  }
 }
