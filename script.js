@@ -255,18 +255,28 @@ function checkWin() {
             <p>Congratulations! You've reached the 2048 tile.</p>
   
             <div class="pop-up-btn">
-              <button type="button" id="win-confirmation-btn">Thanks!</button>
+              <button type="button" id="play-again-btn">Play Again!</button>
+              <button type="button" id="continue-playing-btn">Continue Playing!</button>
             </div>
           </div>
           `;
 
           popUp.classList.remove("deactive");
 
-          const winConfirmationButton = document.getElementById(
-            "win-confirmation-btn"
-          );
+          // Handle "Play Again!" button click to restart the game
+          const playAgainButton = document.getElementById("play-again-btn");
+          playAgainButton.addEventListener("click", () => {
+            playAgain();
 
-          winConfirmationButton.addEventListener("click", () => {
+            popUp.classList.add("deactive");
+            isPopUpVisible = false;
+          });
+
+          // Process "Continue Playing!" button click to resume game
+          const continuePlayingButton = document.getElementById(
+            "continue-playing-btn"
+          );
+          continuePlayingButton.addEventListener("click", () => {
             popUp.classList.add("deactive");
             isPopUpVisible = false;
           });
@@ -278,7 +288,7 @@ function checkWin() {
 
 // Check lose condition (no empty tiles and valid moves) and show lose pop-up
 function checkLose() {
-  // Deep copy gameBoard to preserve original
+  // Deep copy game board to preserve original
   const copyBoard = JSON.parse(JSON.stringify(gameBoard));
 
   let foundEmptyTile = hasEmptyTile();
@@ -302,18 +312,18 @@ function checkLose() {
         <p>Sorry! You've run out of moves.</p>
     
         <div class="pop-up-btn">
-          <button type="button" id="lose-confirmation-btn">OK!</button>
+          <button type="button" id="play-again-btn">Play Again!</button>
         </div>
       </div>
     `;
 
     popUp.classList.remove("deactive");
 
-    const loseConfirmationButton = document.getElementById(
-      "lose-confirmation-btn"
-    );
+    // Handle "Play Again!" button click to restart the game
+    const playAgainButton = document.getElementById("play-again-btn");
+    playAgainButton.addEventListener("click", () => {
+      playAgain();
 
-    loseConfirmationButton.addEventListener("click", () => {
       popUp.classList.add("deactive");
       isPopUpVisible = false;
     });
@@ -394,4 +404,27 @@ function simulateSlideDown(copyBoard) {
   }
 
   return JSON.stringify(copyBoard) !== initialBoardState;
+}
+
+function playAgain() {
+  gameBoard = [
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+  ];
+
+  // Update DOM tiles
+  for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 4; c++) {
+      let tile = document.getElementById(r.toString() + "-" + c.toString());
+      let num = gameBoard[r][c];
+      updateTile(tile, num);
+    }
+  }
+
+  generateRandomTile();
+  generateRandomTile();
+
+  isGameWon = false;
 }
