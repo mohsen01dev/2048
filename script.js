@@ -1,7 +1,8 @@
 // Define variables and DOM elements
-const gameBoardDiv = document.getElementById("game-board");
-const popUp = document.getElementsByClassName("pop-up")[0];
+const gameBoardContainer = document.getElementById("game-board-container");
+const popUpContainer = document.getElementsByClassName("pop-up-container")[0];
 const newGameButton = document.getElementById("new-game-btn");
+const scoreDisplay = document.getElementById("score");
 
 let gameBoard = [
   [0, 0, 0, 0],
@@ -12,6 +13,7 @@ let gameBoard = [
 let currentKey = null;
 let isGameWon = false;
 let isPopUpVisible = false;
+let currentScore = 0;
 
 // Set up game when window loads
 window.onload = function () {
@@ -39,7 +41,7 @@ function setGame() {
       let num = gameBoard[r][c];
 
       updateTile(tile, num);
-      gameBoardDiv.append(tile);
+      gameBoardContainer.append(tile);
     }
   }
 }
@@ -78,6 +80,8 @@ document.addEventListener("keydown", (e) => {
     } else if (e.code == "ArrowDown") {
       slideDown();
     }
+
+    scoreDisplay.innerHTML = `Score: ${currentScore}`;
 
     checkWin();
     checkLose();
@@ -120,6 +124,8 @@ function slide(row) {
     if (row[i] == row[i + 1]) {
       row[i] *= 2;
       row[i + 1] = 0;
+
+      currentScore += row[i];
     }
   }
 
@@ -239,19 +245,19 @@ function checkWin() {
           isGameWon = true;
           isPopUpVisible = true;
 
-          popUp.innerHTML = `
-          <div class="pop-up-content">
+          popUpContainer.innerHTML = `
+          <div class="pop-up-content-container">
             <h1>You Won!</h1>
             <p>Congratulations! You've reached the 2048 tile.</p>
   
-            <div class="pop-up-btn">
+            <div class="pop-up-btn-container">
               <button type="button" id="pop-up-new-game-btn">New Game</button>
               <button type="button" id="pop-up-continue-playing-btn">Continue Playing</button>
             </div>
           </div>
           `;
 
-          popUp.classList.remove("deactive");
+          popUpContainer.classList.remove("deactive");
 
           // Handle "New Game" button click to restart the game
           const popUpNewGameButton = document.getElementById(
@@ -260,7 +266,7 @@ function checkWin() {
           popUpNewGameButton.addEventListener("click", () => {
             newGame();
 
-            popUp.classList.add("deactive");
+            popUpContainer.classList.add("deactive");
             isPopUpVisible = false;
           });
 
@@ -269,7 +275,7 @@ function checkWin() {
             "pop-up-continue-playing-btn"
           );
           popUpContinuePlayingButton.addEventListener("click", () => {
-            popUp.classList.add("deactive");
+            popUpContainer.classList.add("deactive");
             isPopUpVisible = false;
           });
         }
@@ -298,25 +304,25 @@ function checkLose() {
   ) {
     isPopUpVisible = true;
 
-    popUp.innerHTML = `
-      <div class="pop-up-content">
+    popUpContainer.innerHTML = `
+      <div class="pop-up-content-container">
         <h1>You Lost!</h1>
         <p>Sorry! You've run out of moves.</p>
     
-        <div class="pop-up-btn">
+        <div class="pop-up-btn-container">
           <button type="button" id="pop-up-new-game-btn">New Game</button>
         </div>
       </div>
     `;
 
-    popUp.classList.remove("deactive");
+    popUpContainer.classList.remove("deactive");
 
     // Handle "New Game" button click to restart the game
     const popUpNewGameButton = document.getElementById("pop-up-new-game-btn");
     popUpNewGameButton.addEventListener("click", () => {
       newGame();
 
-      popUp.classList.add("deactive");
+      popUpContainer.classList.add("deactive");
       isPopUpVisible = false;
     });
   }
@@ -324,35 +330,52 @@ function checkLose() {
 
 // Simulate left slide operation without updating DOM
 function simulateSlideLeft(copyGameBoard) {
-  const initialBoardState = JSON.stringify(copyGameBoard);
+  const initialGameBoardState = JSON.stringify(copyGameBoard);
 
   for (let r = 0; r < 4; r++) {
     let row = copyGameBoard[r];
-    row = slide(row);
+    row = simulateSlide(row);
     copyGameBoard[r] = row;
   }
 
-  return JSON.stringify(copyGameBoard) !== initialBoardState;
+  return JSON.stringify(copyGameBoard) !== initialGameBoardState;
+}
+
+// Simulate slide() to use in simulate functions
+function simulateSlide(row) {
+  row = removeZero(row);
+
+  for (let i = 0; i < row.length - 1; i++) {
+    if (row[i] == row[i + 1]) {
+      row[i] *= 2;
+      row[i + 1] = 0;
+    }
+  }
+
+  row = removeZero(row);
+  while (row.length < 4) row.push(0); // Add zeros to end of array
+
+  return row;
 }
 
 // Simulate right slide operation without updating DOM
 function simulateSlideRight(copyGameBoard) {
-  const initialBoardState = JSON.stringify(copyGameBoard);
+  const initialGameBoardState = JSON.stringify(copyGameBoard);
 
   for (let r = 0; r < 4; r++) {
     let row = copyGameBoard[r];
     row.reverse(); // Reverse row to simulate sliding right
-    row = slide(row);
+    row = simulateSlide(row);
     row.reverse(); // Restore original order
     copyGameBoard[r] = row;
   }
 
-  return JSON.stringify(copyGameBoard) !== initialBoardState;
+  return JSON.stringify(copyGameBoard) !== initialGameBoardState;
 }
 
 // Simulate up slide operation without updating DOM
 function simulateSlideUp(copyGameBoard) {
-  const initialBoardState = JSON.stringify(copyGameBoard);
+  const initialGameBoardState = JSON.stringify(copyGameBoard);
 
   // Convert column to row to use row sliding logic for column
   for (let c = 0; c < 4; c++) {
@@ -362,7 +385,7 @@ function simulateSlideUp(copyGameBoard) {
       copyGameBoard[2][c],
       copyGameBoard[3][c],
     ];
-    row = slide(row);
+    row = simulateSlide(row);
 
     // Update copy board
     for (let r = 0; r < 4; r++) {
@@ -370,12 +393,12 @@ function simulateSlideUp(copyGameBoard) {
     }
   }
 
-  return JSON.stringify(copyGameBoard) !== initialBoardState;
+  return JSON.stringify(copyGameBoard) !== initialGameBoardState;
 }
 
 // Simulate down slide operation without updating DOM
 function simulateSlideDown(copyGameBoard) {
-  const initialBoardState = JSON.stringify(copyGameBoard);
+  const initialGameBoardState = JSON.stringify(copyGameBoard);
 
   // Convert column to row to use row sliding logic for column
   for (let c = 0; c < 4; c++) {
@@ -386,7 +409,7 @@ function simulateSlideDown(copyGameBoard) {
       copyGameBoard[3][c],
     ];
     row.reverse(); // Reverse row to simulate sliding down
-    row = slide(row);
+    row = simulateSlide(row);
     row.reverse(); // Restore original order
 
     // Update copy board
@@ -395,7 +418,7 @@ function simulateSlideDown(copyGameBoard) {
     }
   }
 
-  return JSON.stringify(copyGameBoard) !== initialBoardState;
+  return JSON.stringify(copyGameBoard) !== initialGameBoardState;
 }
 
 function newGame() {
@@ -408,10 +431,13 @@ function newGame() {
 
   updateDOM();
 
-  generateRandomTile();
-  generateRandomTile();
+  currentScore = 0;
+  scoreDisplay.innerHTML = "Score: 0";
 
   isGameWon = false;
+
+  generateRandomTile();
+  generateRandomTile();
 }
 
 // Run saveGame() before unloading page
