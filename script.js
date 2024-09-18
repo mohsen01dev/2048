@@ -3,7 +3,7 @@ const gameBoardDiv = document.getElementById("game-board");
 const popUp = document.getElementsByClassName("pop-up")[0];
 
 let gameBoard;
-let isKeyDown = false;
+let currentKey = null;
 let isGameWon = false;
 let isPopUpVisible = false;
 
@@ -57,46 +57,35 @@ function updateTile(tile, num) {
 
 // Process key press actions (once per key press)
 document.addEventListener("keydown", (e) => {
-  if (isPopUpVisible) {
+  // Prevent action if pop-up is visible or key is pressed
+  if (isPopUpVisible || currentKey !== null) {
     return;
-  } else if (e.code == "ArrowLeft" && !isKeyDown) {
-    isKeyDown = true;
-    slideLeft();
+  }
+
+  if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.code)) {
+    currentKey = e.code;
+
+    if (e.code == "ArrowLeft") {
+      slideLeft();
+    } else if (e.code == "ArrowRight") {
+      slideRight();
+    } else if (e.code == "ArrowUp") {
+      slideUp();
+    } else if (e.code == "ArrowDown") {
+      slideDown();
+    }
 
     checkWin();
     checkLose();
-
-    generateRandomTile();
-  } else if (e.code == "ArrowRight" && !isKeyDown) {
-    isKeyDown = true;
-    slideRight();
-
-    checkWin();
-    checkLose();
-
-    generateRandomTile();
-  } else if (e.code == "ArrowUp" && !isKeyDown) {
-    isKeyDown = true;
-    slideUp();
-
-    checkWin();
-    checkLose();
-
-    generateRandomTile();
-  } else if (e.code == "ArrowDown" && !isKeyDown) {
-    isKeyDown = true;
-    slideDown();
-
-    checkWin();
-    checkLose();
-
     generateRandomTile();
   }
 });
 
 // Reset key state on key release
-document.addEventListener("keyup", () => {
-  isKeyDown = false;
+document.addEventListener("keyup", (e) => {
+  if (e.code === currentKey) {
+    currentKey = null;
+  }
 });
 
 // Execute corresponding code if the pressed key is "left"
