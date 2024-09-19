@@ -16,22 +16,26 @@ let isGameWon = false;
 let isPopUpVisible = false;
 let currentScore = 0;
 let timerInterval;
-let initialTime;
+let initialTime = Date.now();
 let isFirstMove = true;
+let elapsedTime = 0;
+let lastElapsedTime;
 
 // Set up game when window loads
 window.onload = function () {
   setGame();
   loadGame();
 
-  // Check if game board is empty and generate two initial random tiles if so
   const isGameBoardEmpty = gameBoard.every((row) =>
     row.every((tile) => tile == 0)
   );
+
   if (isGameBoardEmpty) {
     generateRandomTile();
     generateRandomTile();
-  }
+  } else updateDOMGameBoard();
+  if (currentScore) scoreDisplay.innerHTML = `Score: ${currentScore}`;
+  if (lastElapsedTime) updateDOMTimer();
 };
 
 // Set up initial game state
@@ -453,27 +457,31 @@ function newGame() {
 
   generateRandomTile();
   generateRandomTile();
+
+  saveGame();
 }
 
 // Run saveGame() before unloading page
-window.addEventListener("beforeunload", (event) => {
+window.addEventListener("beforeunload", () => {
   saveGame();
 });
 
 // Save game state to local storage
 function saveGame() {
   localStorage.setItem("gameBoard", JSON.stringify(gameBoard));
+  localStorage.setItem("currentScore", JSON.stringify(currentScore));
+  localStorage.setItem("elapsedTime", JSON.stringify(elapsedTime));
 }
 
 // Load game state from local storage
 function loadGame() {
-  const savedBoard = localStorage.getItem("gameBoard");
+  const savedGameBoard = JSON.parse(localStorage.getItem("gameBoard"));
+  const savedCurrentScore = JSON.parse(localStorage.getItem("currentScore"));
+  const savedElapsedTime = JSON.parse(localStorage.getItem("elapsedTime"));
 
-  if (savedBoard) {
-    gameBoard = JSON.parse(savedBoard);
-
-    updateDOMGameBoard();
-  }
+  if (savedGameBoard) gameBoard = savedGameBoard;
+  if (savedCurrentScore) currentScore = savedCurrentScore;
+  if (savedElapsedTime) lastElapsedTime = savedElapsedTime;
 }
 
 // Update DOM
@@ -501,7 +509,10 @@ function startTimer() {
 // Calculate and display timer on DOM
 function updateDOMTimer() {
   // Time elapsed in seconds
-  const elapsedTime = Math.floor((Date.now() - initialTime) / 1000);
+  if (lastElapsedTime)
+    elapsedTime =
+      Math.floor((Date.now() - initialTime) / 1000) + lastElapsedTime;
+  else elapsedTime = Math.floor((Date.now() - initialTime) / 1000);
 
   // Calculate hours, minutes, and seconds
   let hours = Math.floor(elapsedTime / 3600);
@@ -518,6 +529,9 @@ function updateDOMTimer() {
 
 // Stop timer and clear interval
 function stopTimer() {
+  lastElapsedTime = 0;
+  elapsedTime = 0;
+
   clearInterval(timerInterval);
   timerInterval = null;
 }
