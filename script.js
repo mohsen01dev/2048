@@ -4,6 +4,8 @@ const popUpContainer = document.getElementsByClassName("pop-up-container")[0];
 const newGameButton = document.getElementById("new-game-btn");
 const scoreDisplay = document.getElementById("score");
 const timerDisplay = document.getElementById("timer");
+const bestScoreDisplay = document.getElementById("best-score");
+const bestTimeDisplay = document.getElementById("best-time");
 
 let gameBoard = [
   [0, 0, 0, 0],
@@ -20,6 +22,8 @@ let initialTime = Date.now();
 let isFirstMove = true;
 let elapsedTime = 0;
 let lastElapsedTime;
+let bestScore = 0;
+let bestTime = 0;
 
 // Set up game when window loads
 window.onload = function () {
@@ -80,7 +84,7 @@ document.addEventListener("keydown", (e) => {
     currentKey = e.code;
 
     // Start timer on first move
-    if (isFirstMove) {
+    if (isFirstMove && !isGameWon) {
       startTimer();
       isFirstMove = false;
     }
@@ -97,6 +101,7 @@ document.addEventListener("keydown", (e) => {
     }
 
     scoreDisplay.innerHTML = `Score: ${currentScore}`;
+    updateBestScore();
 
     checkWin();
     checkLose();
@@ -258,6 +263,9 @@ function checkWin() {
       for (let c = 0; c < 4; c++) {
         if (gameBoard[r][c] == 2048) {
           isGameWon = true;
+          stopTimer();
+          updateBestTime();
+          checkWin();
           isPopUpVisible = true;
 
           popUpContainer.innerHTML = `
@@ -449,7 +457,7 @@ function newGame() {
   currentScore = 0;
   scoreDisplay.innerHTML = "Score: 0";
 
-  stopTimer();
+  resetTimer();
   timerDisplay.innerHTML = `Time: 00:00:00`;
   isFirstMove = true;
 
@@ -469,6 +477,7 @@ window.addEventListener("beforeunload", () => {
 // Save game state to local storage
 function saveGame() {
   localStorage.setItem("gameBoard", JSON.stringify(gameBoard));
+  localStorage.setItem("isGameWon", JSON.stringify(isGameWon));
   localStorage.setItem("currentScore", JSON.stringify(currentScore));
   localStorage.setItem("elapsedTime", JSON.stringify(elapsedTime));
 }
@@ -476,10 +485,12 @@ function saveGame() {
 // Load game state from local storage
 function loadGame() {
   const savedGameBoard = JSON.parse(localStorage.getItem("gameBoard"));
+  const savedIsGameWon = JSON.parse(localStorage.getItem("isGameWon"));
   const savedCurrentScore = JSON.parse(localStorage.getItem("currentScore"));
   const savedElapsedTime = JSON.parse(localStorage.getItem("elapsedTime"));
 
   if (savedGameBoard) gameBoard = savedGameBoard;
+  if (savedIsGameWon) isGameWon = savedIsGameWon;
   if (savedCurrentScore) currentScore = savedCurrentScore;
   if (savedElapsedTime) lastElapsedTime = savedElapsedTime;
 }
@@ -506,7 +517,7 @@ function startTimer() {
   timerInterval = setInterval(updateDOMTimer, 1000);
 }
 
-// Calculate and display timer on DOM
+// Update DOM timer
 function updateDOMTimer() {
   // Time elapsed in seconds
   if (lastElapsedTime)
@@ -514,24 +525,52 @@ function updateDOMTimer() {
       Math.floor((Date.now() - initialTime) / 1000) + lastElapsedTime;
   else elapsedTime = Math.floor((Date.now() - initialTime) / 1000);
 
+  const [hours, minutes, seconds] = formatTime(elapsedTime);
+  timerDisplay.innerHTML = `Time: ${hours}:${minutes}:${seconds}`;
+}
+
+// Reset timer
+function resetTimer() {
+  stopTimer();
+  lastElapsedTime = 0;
+  elapsedTime = 0;
+}
+
+// Stop timer
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+}
+
+// Update best score
+function updateBestScore() {
+  if (currentScore > bestScore) {
+    bestScore = currentScore;
+    bestScoreDisplay.innerHTML = bestScore;
+  }
+}
+
+// Update best time
+function updateBestTime() {
+  if (elapsedTime < bestTime || !bestTime) {
+    bestTime = elapsedTime;
+
+    const [hours, minutes, seconds] = formatTime(bestTime);
+    bestTimeDisplay.innerHTML = `${hours}:${minutes}:${seconds}`;
+  }
+}
+
+// Calculate and format time
+function formatTime(time) {
   // Calculate hours, minutes, and seconds
-  let hours = Math.floor(elapsedTime / 3600);
-  let minutes = Math.floor((elapsedTime % 3600) / 60);
-  let seconds = elapsedTime % 60;
+  let hours = Math.floor(time / 3600);
+  let minutes = Math.floor((time % 3600) / 60);
+  let seconds = time % 60;
 
   // Format hours, minutes, and seconds with leading zeros
   hours = hours.toString().padStart(2, "0");
   minutes = minutes.toString().padStart(2, "0");
   seconds = seconds.toString().padStart(2, "0");
 
-  timerDisplay.innerHTML = `Time: ${hours}:${minutes}:${seconds}`;
-}
-
-// Stop timer and clear interval
-function stopTimer() {
-  lastElapsedTime = 0;
-  elapsedTime = 0;
-
-  clearInterval(timerInterval);
-  timerInterval = null;
+  return [hours, minutes, seconds];
 }
