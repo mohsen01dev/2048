@@ -35,7 +35,7 @@ h1 {
   font-size: 2rem;
 }
 
-#stars-best-time-score-container {
+#best-stats-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -87,7 +87,7 @@ h1 {
   position: relative;
 }
 
-#timer-score-container {
+#stats-container {
   margin-top: 25px;
   margin-bottom: 5px;
 
@@ -228,13 +228,15 @@ h1 {
 }
 
 .pop-up-container button:hover,
-#new-game-btn:hover {
+#new-game-btn:hover,
+#reset-btn:hover {
   background-color: #cdc1b5;
   color: #f5f5f5;
 }
 
 .pop-up-container button:active,
-#new-game-btn:active {
+#new-game-btn:active,
+#reset-btn:active {
   background-color: #bbada0;
   border: 1px solid #bbada0;
   color: #f5f5f5;
@@ -244,7 +246,13 @@ h1 {
   display: none;
 }
 
-#new-game-btn {
+#buttons-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+#new-game-btn,
+#reset-btn {
   margin-top: 10px;
   padding: 10px;
 

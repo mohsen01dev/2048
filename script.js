@@ -6,6 +6,7 @@ const scoreDisplay = document.getElementById("score");
 const timerDisplay = document.getElementById("timer");
 const bestScoreDisplay = document.getElementById("best-score");
 const bestTimeDisplay = document.getElementById("best-time");
+const resetButton = document.getElementById("reset-btn");
 
 let gameBoard = [
   [0, 0, 0, 0],
@@ -452,6 +453,7 @@ function simulateSlideDown(copyGameBoard) {
   return JSON.stringify(copyGameBoard) !== initialGameBoardState;
 }
 
+// Start a new game
 function newGame() {
   gameBoard = [
     [0, 0, 0, 0],
@@ -520,7 +522,7 @@ function updateDOMGameBoard() {
   }
 }
 
-// Handle "New Game" button click to restart the game
+// Handle "New Game" button click
 newGameButton.addEventListener("click", () => {
   newGame();
 });
@@ -588,3 +590,19 @@ function formatTime(time) {
 
   return [hours, minutes, seconds];
 }
+
+// Reset the game
+function resetGame() {
+  bestScore = 0;
+  bestScoreDisplay.innerHTML = "0";
+
+  bestTime = 0;
+  bestTimeDisplay.innerHTML = "00:00:00";
+
+  newGame();
+}
+
+// Handle "Reset" button click
+resetButton.addEventListener("click", () => {
+  resetGame();
+});
