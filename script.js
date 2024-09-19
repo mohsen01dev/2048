@@ -33,13 +33,21 @@ window.onload = function () {
   const isGameBoardEmpty = gameBoard.every((row) =>
     row.every((tile) => tile == 0)
   );
-
   if (isGameBoardEmpty) {
     generateRandomTile();
     generateRandomTile();
   } else updateDOMGameBoard();
+
   if (currentScore) scoreDisplay.innerHTML = `Score: ${currentScore}`;
+
   if (lastElapsedTime) updateDOMTimer();
+
+  if (bestScore) bestScoreDisplay.innerHTML = bestScore;
+
+  if (bestTime) {
+    const [hours, minutes, seconds] = formatTime(bestTime);
+    bestTimeDisplay.innerHTML = `${hours}:${minutes}:${seconds}`;
+  }
 };
 
 // Set up initial game state
@@ -480,6 +488,8 @@ function saveGame() {
   localStorage.setItem("isGameWon", JSON.stringify(isGameWon));
   localStorage.setItem("currentScore", JSON.stringify(currentScore));
   localStorage.setItem("elapsedTime", JSON.stringify(elapsedTime));
+  localStorage.setItem("bestScore", JSON.stringify(bestScore));
+  localStorage.setItem("bestTime", JSON.stringify(bestTime));
 }
 
 // Load game state from local storage
@@ -488,11 +498,15 @@ function loadGame() {
   const savedIsGameWon = JSON.parse(localStorage.getItem("isGameWon"));
   const savedCurrentScore = JSON.parse(localStorage.getItem("currentScore"));
   const savedElapsedTime = JSON.parse(localStorage.getItem("elapsedTime"));
+  const savedBestScore = JSON.parse(localStorage.getItem("bestScore"));
+  const savedBestTime = JSON.parse(localStorage.getItem("bestTime"));
 
   if (savedGameBoard) gameBoard = savedGameBoard;
   if (savedIsGameWon) isGameWon = savedIsGameWon;
   if (savedCurrentScore) currentScore = savedCurrentScore;
   if (savedElapsedTime) lastElapsedTime = savedElapsedTime;
+  if (savedBestScore) bestScore = savedBestScore;
+  if (savedBestTime) bestTime = savedBestTime;
 }
 
 // Update DOM
