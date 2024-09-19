@@ -13,9 +13,33 @@
   <body>
     <section>
       <!-- Stats Display -->
-      <div id="timer-score-container">
-        <p id="timer">Time: 00:00:00</p>
-        <p id="score">Score: 0</p>
+      <div>
+        <!-- Best score and time -->
+        <div id="stars-best-time-score-container">
+          <div>
+            <img src="images/star.svg" id="left-star-icon" />
+            <img src="images/star.svg" id="middle-star-icon" />
+            <img src="images/star.svg" id="right-star-icon" />
+          </div>
+
+          <div id="best-time-score-container">
+            <div id="best-time">
+              <img src="images/best-time.svg" class="best-icons" />
+              <p>00:00:00</p>
+            </div>
+
+            <div id="best-score">
+              <img src="images/best-score.svg" class="best-icons" />
+              <p>0</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timer and score -->
+        <div id="timer-score-container">
+          <p id="timer">Time: 00:00:00</p>
+          <p id="score">Score: 0</p>
+        </div>
       </div>
 
       <!-- Game board -->

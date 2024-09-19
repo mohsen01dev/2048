@@ -13,7 +13,7 @@
   margin: 0;
   padding: 0;
 
-  color: #151515;
+  color: #727371;
   outline: none;
 
   font-family: "FiraCode-Regular", monospace;
@@ -35,7 +35,60 @@ h1 {
   font-size: 2rem;
 }
 
+#stars-best-time-score-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#left--star-icon {
+  margin-right: -5px;
+}
+
+#left-star-icon,
+#right-star-icon {
+  width: 25px;
+}
+
+#middle-star-icon {
+  width: 35px;
+}
+
+#right-star-icon {
+  margin-left: -5px;
+}
+
+#best-time-score-container {
+  width: 300px;
+  margin-top: 5px;
+  padding: 10px;
+
+  display: flex;
+  justify-content: space-around;
+
+  background-color: #cdc1b5;
+  border: 5px solid #bbada0;
+}
+
+#best-time,
+#best-score {
+  display: flex;
+  gap: 5px;
+}
+
+.best-icons {
+  width: 20px;
+}
+
+#best-time p,
+#best-score p {
+  bottom: -3px;
+
+  position: relative;
+}
+
 #timer-score-container {
+  margin-top: 25px;
   margin-bottom: 5px;
 
   display: flex;
