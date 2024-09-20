@@ -29,6 +29,7 @@ let touchStartX = 0;
 let touchStartY = 0;
 let touchEndX = 0;
 let touchEndY = 0;
+let isGameOver = false;
 
 // Set up game when window loads
 window.onload = function () {
@@ -52,6 +53,50 @@ window.onload = function () {
   if (bestTime) {
     const [hours, minutes, seconds] = formatTime(bestTime);
     bestTimeDisplay.innerHTML = `${hours}:${minutes}:${seconds}`;
+  }
+
+  if (isPopUpVisible) {
+    if (isGameOver) {
+      popUpContainer.innerHTML = `
+      <div class="pop-up-content-container">
+        <h1>Game Over!</h1>
+        <p>Congratulations! You've already won, but now you're out of moves.</p>
+
+        <div class="pop-up-btn-container">
+          <button type="button" id="pop-up-new-game-btn">New Game</button>
+        </div>
+      </div>
+      `;
+
+      handleLoseGameOverPopUp();
+    } else if (isGameWon) {
+      popUpContainer.innerHTML = `
+      <div class="pop-up-content-container">
+        <h1>You Won!</h1>
+        <p>Congratulations! You've reached the 2048 tile.</p>
+
+        <div class="pop-up-btn-container">
+          <button type="button" id="pop-up-new-game-btn">New Game</button>
+          <button type="button" id="pop-up-continue-playing-btn">Continue Playing</button>
+        </div>
+      </div>
+      `;
+
+      handleWinPopUp();
+    } else {
+      popUpContainer.innerHTML = `
+      <div class="pop-up-content-container">
+        <h1>You Lost!</h1>
+        <p>Sorry! You've run out of moves.</p>
+
+        <div class="pop-up-btn-container">
+          <button type="button" id="pop-up-new-game-btn">New Game</button>
+        </div>
+      </div>
+      `;
+
+      handleLoseGameOverPopUp();
+    }
   }
 };
 
@@ -278,14 +323,13 @@ function checkWin() {
           isGameWon = true;
           stopTimer();
           updateBestTime();
-          checkWin();
           isPopUpVisible = true;
 
           popUpContainer.innerHTML = `
           <div class="pop-up-content-container">
             <h1>You Won!</h1>
             <p>Congratulations! You've reached the 2048 tile.</p>
-  
+
             <div class="pop-up-btn-container">
               <button type="button" id="pop-up-new-game-btn">New Game</button>
               <button type="button" id="pop-up-continue-playing-btn">Continue Playing</button>
@@ -293,27 +337,7 @@ function checkWin() {
           </div>
           `;
 
-          popUpContainer.classList.remove("deactive");
-
-          // Handle "New Game" button click to restart the game
-          const popUpNewGameButton = document.getElementById(
-            "pop-up-new-game-btn"
-          );
-          popUpNewGameButton.addEventListener("click", () => {
-            newGame();
-
-            popUpContainer.classList.add("deactive");
-            isPopUpVisible = false;
-          });
-
-          // Process "Continue Playing" button click to resume game
-          const popUpContinuePlayingButton = document.getElementById(
-            "pop-up-continue-playing-btn"
-          );
-          popUpContinuePlayingButton.addEventListener("click", () => {
-            popUpContainer.classList.add("deactive");
-            isPopUpVisible = false;
-          });
+          handleWinPopUp();
         }
       }
     }
@@ -338,29 +362,36 @@ function checkLose() {
     !canSlideUp &&
     !canSlideDown
   ) {
+    stopTimer();
     isPopUpVisible = true;
 
-    popUpContainer.innerHTML = `
+    if (isGameWon) {
+      isGameOver = true;
+
+      popUpContainer.innerHTML = `
       <div class="pop-up-content-container">
-        <h1>You Lost!</h1>
-        <p>Sorry! You've run out of moves.</p>
-    
+        <h1>Game Over!</h1>
+        <p>Congratulations! You've already won, but now you're out of moves.</p>
+
         <div class="pop-up-btn-container">
           <button type="button" id="pop-up-new-game-btn">New Game</button>
         </div>
       </div>
-    `;
+      `;
+    } else {
+      popUpContainer.innerHTML = `
+      <div class="pop-up-content-container">
+        <h1>You Lost!</h1>
+        <p>Sorry! You've run out of moves.</p>
 
-    popUpContainer.classList.remove("deactive");
+        <div class="pop-up-btn-container">
+          <button type="button" id="pop-up-new-game-btn">New Game</button>
+        </div>
+      </div>
+      `;
+    }
 
-    // Handle "New Game" button click to restart the game
-    const popUpNewGameButton = document.getElementById("pop-up-new-game-btn");
-    popUpNewGameButton.addEventListener("click", () => {
-      newGame();
-
-      popUpContainer.classList.add("deactive");
-      isPopUpVisible = false;
-    });
+    handleLoseGameOverPopUp();
   }
 }
 
@@ -476,6 +507,7 @@ function newGame() {
   isFirstMove = true;
 
   isGameWon = false;
+  isGameOver = false;
 
   generateRandomTile();
   generateRandomTile();
@@ -496,6 +528,8 @@ function saveGame() {
   localStorage.setItem("elapsedTime", JSON.stringify(elapsedTime));
   localStorage.setItem("bestScore", JSON.stringify(bestScore));
   localStorage.setItem("bestTime", JSON.stringify(bestTime));
+  localStorage.setItem("isGameOver", JSON.stringify(isGameOver));
+  localStorage.setItem("isPopUpVisible", JSON.stringify(isPopUpVisible));
 }
 
 // Load game state from local storage
@@ -506,6 +540,10 @@ function loadGame() {
   const savedElapsedTime = JSON.parse(localStorage.getItem("elapsedTime"));
   const savedBestScore = JSON.parse(localStorage.getItem("bestScore"));
   const savedBestTime = JSON.parse(localStorage.getItem("bestTime"));
+  const savedIsGameOver = JSON.parse(localStorage.getItem("isGameOver"));
+  const savedIsPopUpVisible = JSON.parse(
+    localStorage.getItem("isPopUpVisible")
+  );
 
   if (savedGameBoard) gameBoard = savedGameBoard;
   if (savedIsGameWon) isGameWon = savedIsGameWon;
@@ -513,6 +551,8 @@ function loadGame() {
   if (savedElapsedTime) lastElapsedTime = savedElapsedTime;
   if (savedBestScore) bestScore = savedBestScore;
   if (savedBestTime) bestTime = savedBestTime;
+  if (savedIsGameOver) isGameOver = savedIsGameOver;
+  if (savedIsPopUpVisible) isPopUpVisible = savedIsPopUpVisible;
 }
 
 // Update DOM
@@ -673,3 +713,38 @@ document.addEventListener(
   },
   { passive: false } // Ensure e.preventDefault() works
 );
+
+function handleWinPopUp() {
+  popUpContainer.classList.remove("deactive");
+
+  // Handle "New Game" button click to start a new game
+  const popUpNewGameButton = document.getElementById("pop-up-new-game-btn");
+  popUpNewGameButton.addEventListener("click", () => {
+    newGame();
+
+    popUpContainer.classList.add("deactive");
+    isPopUpVisible = false;
+  });
+
+  // Process "Continue Playing" button click to resume game
+  const popUpContinuePlayingButton = document.getElementById(
+    "pop-up-continue-playing-btn"
+  );
+  popUpContinuePlayingButton.addEventListener("click", () => {
+    popUpContainer.classList.add("deactive");
+    isPopUpVisible = false;
+  });
+}
+
+function handleLoseGameOverPopUp() {
+  popUpContainer.classList.remove("deactive");
+
+  // Handle "New Game" button click to start a new game
+  const popUpNewGameButton = document.getElementById("pop-up-new-game-btn");
+  popUpNewGameButton.addEventListener("click", () => {
+    newGame();
+
+    popUpContainer.classList.add("deactive");
+    isPopUpVisible = false;
+  });
+}
