@@ -25,6 +25,10 @@ let elapsedTime = 0;
 let lastElapsedTime;
 let bestScore = 0;
 let bestTime = 0;
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
 
 // Set up game when window loads
 window.onload = function () {
@@ -606,3 +610,66 @@ function resetGame() {
 resetButton.addEventListener("click", () => {
   resetGame();
 });
+
+// Initial touch event listener
+document.addEventListener("touchstart", function (e) {
+  // Get the first touch in multi-touch
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+});
+
+// Ending touch event listener
+document.addEventListener("touchend", function (e) {
+  // Get the first touch in multi-touch
+  touchEndX = e.changedTouches[0].clientX;
+  touchEndY = e.changedTouches[0].clientY;
+
+  handleSwipe();
+});
+
+// Determine swipe direction
+function handleSwipe() {
+  const swipeThreshold = 30;
+  let deltaX = touchEndX - touchStartX;
+  let deltaY = touchEndY - touchStartY;
+
+  if (Math.abs(deltaX) > swipeThreshold || Math.abs(deltaY) > swipeThreshold) {
+    // Start timer on first move
+    if (isFirstMove && !isGameWon) {
+      startTimer();
+      isFirstMove = false;
+    }
+
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      // Horizontal swipe
+      if (deltaX > 0) {
+        slideRight(); // Swipe right
+      } else {
+        slideLeft(); // Swipe left
+      }
+    } else {
+      // Vertical swipe
+      if (deltaY > 0) {
+        slideDown(); // Swipe down
+      } else {
+        slideUp(); // Swipe up
+      }
+    }
+
+    scoreDisplay.innerHTML = `Score: ${currentScore}`;
+    updateBestScore();
+
+    checkWin();
+    checkLose();
+    generateRandomTile();
+  }
+}
+
+// Disable touch scrolling
+document.addEventListener(
+  "touchmove",
+  function (e) {
+    e.preventDefault();
+  },
+  { passive: false } // Ensure e.preventDefault() works
+);
