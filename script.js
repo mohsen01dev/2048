@@ -33,6 +33,8 @@ let isGameOver = false;
 
 // Set up game when window loads
 window.onload = function () {
+  checkScreenSize();
+
   setGame();
   loadGame();
 
@@ -754,3 +756,21 @@ function handleLoseGameOverPopUp() {
     newGame();
   });
 }
+
+// Check and display low resolution warning
+function checkScreenSize() {
+  if (window.innerWidth < 300) {
+    popUpContainer.classList.remove("deactive");
+
+    popUpContainer.innerHTML = `
+    <div class="pop-up-content-container">
+      <h1>Sorry!</h1>
+      <p>The screen is too small.</p>
+      <p id="pop-up-parentheses-text">(less than 300px wide)</p>
+    </div>
+    `;
+  } else popUpContainer.classList.add("deactive");
+}
+
+// Check screen size on resize
+window.addEventListener("resize", checkScreenSize);

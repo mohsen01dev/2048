@@ -67,7 +67,7 @@ h1 {
   justify-content: space-around;
 
   background-color: #cdc1b5;
-  border: 5px solid #bbada0;
+  border: 4px solid #bbada0;
 }
 
 #best-time-container,
@@ -105,20 +105,20 @@ h1 {
   align-items: center;
 
   background-color: #cdc1b5;
-  border: 10px solid #bbada0;
+  border: 8px solid #bbada0;
 }
 
 .tile {
-  width: 95px;
-  height: 95px;
+  width: 96px;
+  height: 96px;
 
   display: flex;
   justify-content: center;
   align-items: center;
 
-  border: 5px solid #bbada0;
+  border: 4px solid #bbada0;
 
-  font-size: 24px;
+  font-size: 1.5rem;
 }
 
 /* Style for numbered tiles */
@@ -210,6 +210,10 @@ h1 {
   text-align: center;
 }
 
+#pop-up-parentheses-text {
+  font-size: 0.75rem;
+}
+
 .pop-up-btn-container {
   margin-top: 20px;
 
@@ -260,4 +264,95 @@ h1 {
   border: 1px solid #cdc1b5;
 
   cursor: pointer;
+}
+
+/* Responsive styles for game layout */
+/* Styles for < 420px */
+@media screen and (width < 420px) {
+  #best-time-score-container {
+    width: 280px;
+
+    border: 4px solid #bbada0;
+  }
+
+  #game-board-container {
+    width: 360px;
+    height: 360px;
+
+    border: 8px solid #bbada0;
+  }
+
+  .tile {
+    width: 86px;
+    height: 86px;
+
+    border: 4px solid #bbada0;
+  }
+}
+
+/* Styles for < 380px */
+@media screen and (width < 380px) {
+  #best-time-score-container {
+    width: 160px;
+
+    flex-direction: column;
+    align-items: center;
+
+    border: 3px solid #bbada0;
+  }
+
+  #best-score-container {
+    margin-top: 10px;
+  }
+
+  #game-board-container {
+    width: 320px;
+    height: 320px;
+
+    border: 6px solid #bbada0;
+  }
+
+  .tile {
+    width: 77px;
+    height: 77px;
+
+    border: 3px solid #bbada0;
+  }
+}
+
+/* Styles for < 340px */
+@media screen and (width < 340px) {
+  #best-time-score-container {
+    width: 150px;
+
+    flex-direction: column;
+    align-items: center;
+
+    border: 3px solid #bbada0;
+  }
+
+  #best-score-container {
+    margin-top: 10px;
+  }
+
+  #game-board-container {
+    width: 280px;
+    height: 280px;
+
+    border: 6px solid #bbada0;
+  }
+
+  .tile {
+    width: 67px;
+    height: 67px;
+
+    border: 3px solid #bbada0;
+  }
+}
+
+/* Hide on < 300px */
+@media screen and (width < 300px) {
+  #game-container {
+    display: none;
+  }
 }
