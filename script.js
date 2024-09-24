@@ -164,6 +164,8 @@ document.addEventListener("keydown", (e) => {
     checkWin();
     checkLose();
     generateRandomTile();
+
+    saveGame();
   }
 });
 
@@ -515,7 +517,7 @@ function newGame() {
   saveGame();
 }
 
-// Run saveGame() before unloading page
+// Run saveGame() on page unload
 window.addEventListener("beforeunload", () => {
   saveGame();
 });
@@ -702,6 +704,8 @@ function handleSwipe() {
     checkWin();
     checkLose();
     generateRandomTile();
+
+    saveGame();
   }
 }
 
@@ -720,10 +724,10 @@ function handleWinPopUp() {
   // Handle "New Game" button click to start a new game
   const popUpNewGameButton = document.getElementById("pop-up-new-game-btn");
   popUpNewGameButton.addEventListener("click", () => {
-    newGame();
-
     popUpContainer.classList.add("deactive");
     isPopUpVisible = false;
+
+    newGame();
   });
 
   // Process "Continue Playing" button click to resume game
@@ -733,6 +737,8 @@ function handleWinPopUp() {
   popUpContinuePlayingButton.addEventListener("click", () => {
     popUpContainer.classList.add("deactive");
     isPopUpVisible = false;
+
+    saveGame();
   });
 }
 
@@ -742,9 +748,9 @@ function handleLoseGameOverPopUp() {
   // Handle "New Game" button click to start a new game
   const popUpNewGameButton = document.getElementById("pop-up-new-game-btn");
   popUpNewGameButton.addEventListener("click", () => {
-    newGame();
-
     popUpContainer.classList.add("deactive");
     isPopUpVisible = false;
+
+    newGame();
   });
 }
