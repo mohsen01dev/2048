@@ -759,14 +759,14 @@ function handleLoseGameOverPopUp() {
 
 // Check and display low resolution warning
 function checkScreenSize() {
-  if (window.innerWidth < 300) {
+  if (window.innerWidth < 299) {
     popUpContainer.classList.remove("deactive");
 
     popUpContainer.innerHTML = `
     <div class="pop-up-content-container">
       <h1>Sorry!</h1>
       <p>The screen is too small.</p>
-      <p id="pop-up-parentheses-text">(less than 300px wide)</p>
+      <p id="pop-up-parentheses-text">(less than 299px wide)</p>
     </div>
     `;
   } else popUpContainer.classList.add("deactive");
