@@ -338,17 +338,12 @@ h1 {
     width: 160px;
     height: 80px;
 
-    flex-direction: column;
+    flex-direction: column-reverse;
     align-items: center;
   }
 
-  #best-score-container,
-  #score {
-    margin-top: 5px;
-  }
-
   #stats-container {
-    flex-direction: column;
+    flex-direction: column-reverse;
     align-items: center;
   }
 

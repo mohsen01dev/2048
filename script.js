@@ -34,6 +34,7 @@ let isGameOver = false;
 // Set up game when window loads
 window.onload = function () {
   checkScreenSize();
+  disableHover();
 
   setGame();
   loadGame();
@@ -774,3 +775,17 @@ function checkScreenSize() {
 
 // Check screen size on resize
 window.addEventListener("resize", checkScreenSize);
+
+// Remove hover styles for touch devices
+function disableHover() {
+  if ("ontouchstart" in window || navigator.maxTouchPoints) {
+    const styleSheet = document.styleSheets[0];
+    const rules = styleSheet.cssRules;
+
+    for (let i = rules.length - 1; i >= 0; i--) {
+      if (rules[i].selectorText && rules[i].selectorText.includes(":hover")) {
+        styleSheet.deleteRule(i);
+      }
+    }
+  }
+}
